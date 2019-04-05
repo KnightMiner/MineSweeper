@@ -5,7 +5,7 @@ import javax.swing.UIManager;
 /**
  * Main launcher class for MineSweeper, containing all the menus and general
  * prompts
- * 
+ *
  * @author  KnightMiner
  */
 public class MineSweeper {
@@ -42,13 +42,13 @@ public class MineSweeper {
         MineSweeperBoard board = null;
         switch(difficulty) {
             case EASY:
-                board = new MineSweeperBoard(9, 9, 10);
+                board = new MineSweeperBoard(9, 9, 10, 0);
                 break;
             case NORMAL:
-                board = new MineSweeperBoard(16, 16, 40);
+                board = new MineSweeperBoard(16, 16, 40, 1);
                 break;
             case HARD:
-                board = new MineSweeperBoard(30, 16, 99);
+                board = new MineSweeperBoard(30, 16, 99, 3);
                 break;
             case CUSTOM:
                 board = customGame();
@@ -71,7 +71,7 @@ public class MineSweeper {
 
         // if they pressed OK
         if(result == JOptionPane.OK_OPTION) {
-            return menu.getBoard();
+            return menu.createBoard();
         }
         else {
             return null;

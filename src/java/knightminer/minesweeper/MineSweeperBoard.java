@@ -99,6 +99,11 @@ public class MineSweeperBoard implements Serializable {
         // store the current seed for saving games
         this.seed = seed;
 
+        // no mines? no work
+        if(mineCount == 0) {
+            return;
+        }
+
         // list of spaces we can still place a mine at
         List<Space> remainingSpaces = new ArrayList<>(Arrays.asList(getAllSpaces()));
 

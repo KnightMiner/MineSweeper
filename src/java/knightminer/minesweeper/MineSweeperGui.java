@@ -22,7 +22,7 @@ import javax.swing.SwingConstants;
 
 /**
  * Main GUI object for Minesweeper games. Called when gameplay is ready
- * 
+ *
  * @author  KnightMiner
  */
 public class MineSweeperGui extends JFrame implements ActionListener {
@@ -133,11 +133,6 @@ public class MineSweeperGui extends JFrame implements ActionListener {
         buttonNewGame = new JButton("New game");
         buttonNewGame.addActionListener(this);
 
-        // cheating
-        buttonCheat = new JButton();
-        updateCheat();
-        buttonCheat.addActionListener(this);
-
         // remaining mines display
         mines = new JLabel("Mines", SwingConstants.CENTER);
         updateMines();
@@ -147,8 +142,19 @@ public class MineSweeperGui extends JFrame implements ActionListener {
         top.setLayout(new GridLayout(1, 3));
         top.add(mines);
         top.add(buttonNewGame);
-        top.add(buttonCheat);
-        top.setPreferredSize(new Dimension(20, top.getFontMetrics(buttonCheat.getFont()).getHeight() * 2));
+
+
+        // cheating, skip if 0 cheats to start
+        if(board.canCheat()) {
+            buttonCheat = new JButton();
+            updateCheat();
+            buttonCheat.addActionListener(this);
+            top.add(buttonCheat);
+        } else {
+            top.add(new JLabel(""));
+        }
+
+        top.setPreferredSize(new Dimension(20, top.getFontMetrics(buttonNewGame.getFont()).getHeight() * 2));
 
         pane.add(top, BorderLayout.NORTH);
 
