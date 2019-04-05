@@ -93,97 +93,38 @@ public class MineSweeperBoard implements Serializable {
      * Populates the board with mines
      * @param seed  Seed to generate mines. Two fields with the same size and
      * seed will have the same mines locations
-     * @param space space clicked when generating the mines
+     * @param clicked space clicked when generating the mines
      */
-    public void generateMines(long seed, Space space) {
+    protected void generateMines(long seed, Space clicked) {
         // store the current seed for saving games
         this.seed = seed;
 
+        // list of spaces we can still place a mine at
+        List<Space> remainingSpaces = new ArrayList<>(Arrays.asList(getAllSpaces()));
 
-        // determine the total safe spaces on the board
-        int safeCount = 0;
-
-        // cheat click handling: null spaces
-        boolean noSpace = space == null;
-
-        // against the left or right edge gives us just two columns
-        int x = 0, y = 0;
-
-        // only adjust if we have a clicked space
-        if(!noSpace) {
-            x = space.getX();
-            if(x == 0 || x == width - 1) {
-                safeCount = 2;
-            }
-            else {
-                safeCount = 3;
-            }
-            // against the top or bottom gives us two rows
-            y = space.getY();
-            if(y == 0 || y == height - 1) {
-                safeCount *= 2;
-            }
-            else {
-                safeCount *= 3;
-            }
+        // if we clicked somewhere, remove all nearby spaces
+        if(clicked != null) {
+            // remove all unclickable spaces
+            final int x = clicked.getX(), y = clicked.getY();
+            remainingSpaces.removeIf((space) -> {
+                return (y-1) <= space.getY() && space.getY() <= (y+1)
+                    && (x-1) <= space.getX() && space.getX() <= (x+1);
+            });
         }
 
-        // total count
-        int size = width * height - safeCount;
-
-        // clear the mines first, as we run this multiple times on first click
-        this.mines = new boolean[height][width];
-
-        // new seeded random object, so results can be controlled
+        // random object seeded so results can be controlled
         Random random = new Random(seed);
 
-        // first we generate the relative positions of the mines
-        int[] minePos = new int[mineCount];
+        // place mines
+        this.mines = new boolean[height][width];
         for(int i = 0; i < mineCount; i++) {
-            // each one is one less since we skip the spot of the last added mine
-            minePos[i] = random.nextInt(size - i);
-        }
+            // just get the linear location of the next mine and place it
+            int mine = random.nextInt(remainingSpaces.size());
+            Space space = remainingSpaces.get(mine);
+            mines[space.getY()][space.getX()] = true;
 
-        // add the mines to the board
-        for(int mine : minePos) {
-            int position = 0;
-
-            boolean done = false;
-            for(int r = 0; r < mines.length && !done; r++) {
-                boolean[] row = mines[r];
-                for(int c = 0; c < row.length && !done; c++) {
-                    // if on or around the space clicked then skip
-                    if(!noSpace) {
-                        boolean safe = false;
-                        for(int i = -1; i <= 1; i++) {
-                            for(int j = -1; j <= 1; j++) {
-                                if((r + i == y) && (c + j == x)) {
-                                    safe = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if(safe) {
-                            continue;
-                        }
-                    }
-
-                    // if there is already a bomb there, it is also skipped
-                    // not even counted for the position
-                    if(row[c]) {
-                        continue;
-                    }
-
-                    // otherwise, if we have a position place the bomb and break
-                    if(position == mine) {
-                        row[c] = true;
-                        done = true;
-                    }
-                    else {
-                        position++;
-                    }
-                }
-            }
+            // remove the space so we don't hit it twice
+            remainingSpaces.remove(mine);
         }
     }
 
