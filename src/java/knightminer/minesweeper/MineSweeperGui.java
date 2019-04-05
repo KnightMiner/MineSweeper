@@ -8,7 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.URL;
-import java.util.Iterator;
+import java.util.Queue;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -200,14 +200,13 @@ public class MineSweeperGui extends JFrame implements ActionListener {
      * Updates all spaces pending update to display their current value
      */
     public void updateSpaces() {
-        Iterator<Space> iterator = board.getUpdates().iterator();
-        while(iterator.hasNext()) {
-            Space space = iterator.next();
+        Queue<Space> queue = board.getUpdates();
+        while(!queue.isEmpty()) {
+            Space space = queue.poll();
             MineButton update = getButton(space);
             if(update != null) {
                 update.updatePiece();
             }
-            iterator.remove();
         }
 
         updateMines();

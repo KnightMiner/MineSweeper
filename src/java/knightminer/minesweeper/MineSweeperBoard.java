@@ -23,7 +23,7 @@ public class MineSweeperBoard implements Serializable {
     public static final Random RANDOM = new Random();
 
     // resizable
-    private ArrayList<Space> update;
+    private transient Queue<Space> update;
 
     // board dimensions
     private int width, height;
@@ -64,7 +64,7 @@ public class MineSweeperBoard implements Serializable {
         this.mineCount = Math.min(mineCount, width * height - 9);
         this.cheatsAllowed = this.cheats = cheats;
 
-        update = new ArrayList<Space>();
+        update = new LinkedList<>();
     }
 
     /**
@@ -784,7 +784,7 @@ public class MineSweeperBoard implements Serializable {
      * Gets a list of spaces pending updates to update the button displays
      * @return a list of spaces needing an update
      */
-    public ArrayList<Space> getUpdates() {
+    public Queue<Space> getUpdates() {
         return update;
     }
 
